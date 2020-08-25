@@ -5,6 +5,7 @@ const ACTIONS = {
   MAKE_REQUEST: "make-request",
   GET_DATA: "get-data",
   ERROR: "error",
+  UPDATE_NEXT_PAGE: "update-has-next-page",
 };
 
 const CORS_URL = "https://cors-anywhere.herokuapp.com/";
@@ -23,6 +24,9 @@ function reducer(state, action) {
 
     case ACTIONS.ERROR:
       return { ...state, loading: false, error: action.payload.error };
+
+    case ACTIONS.UPDATE_NEXT_PAGE:
+      return { ...state, hasNextPage: action.payload.hasNextPage };
 
     default:
       return state;
@@ -50,8 +54,26 @@ export default function useFetchJobs(params, page) {
         dispatch({ type: ACTIONS.ERROR, payload: { error: error } });
       });
 
+    const cancelTokenNextPage = axios.CancelToken.source(); //for canceling request
+    axios
+      .get(BASE_URL, {
+        cancelToken: cancelTokenNextPage.token,
+        params: { markdown: true, page: page + 1, ...params },
+      })
+      .then((res) => {
+        dispatch({
+          type: ACTIONS.UPDATE_NEXT_PAGE,
+          payload: { hasNextPage: res.data.length !== 0 },
+        });
+      })
+      .catch((error) => {
+        if (axios.isCancel(error)) return;
+        dispatch({ type: ACTIONS.ERROR, payload: { error: error } });
+      });
+
     return () => {
       cancelToken.cancel();
+      cancelTokenNextPage.cancel();
     };
     // cleanup code for cancel token request
   }, [params, page]);
