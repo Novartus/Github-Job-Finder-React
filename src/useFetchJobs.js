@@ -8,10 +8,12 @@ const ACTIONS = {
   UPDATE_NEXT_PAGE: "update-has-next-page",
 };
 
-const CORS_URL = "https://cors-anywhere.herokuapp.com/";
+// const CORS_URL = "https://cors-anywhere.herokuapp.com/";
 // You need a server to act as a proxy to cors so we are using this.
+//Chrome Extension: https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf
 
-const BASE_URL = CORS_URL + "https://jobs.github.com/positions.json";
+// const BASE_URL = CORS_URL + "https://jobs.github.com/positions.json";
+const BASE_URL = "https://jobs.github.com/positions.json";
 
 function reducer(state, action) {
   //whatever we pass the dispatch goes to this action & state is state
